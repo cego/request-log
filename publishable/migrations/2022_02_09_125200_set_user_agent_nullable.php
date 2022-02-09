@@ -16,7 +16,6 @@ class SetUserAgentNullable extends Migration
         Schema::table('request_logs', static function (Blueprint $table) {
             $table->string('user_agent')->nullable(true)->change();
         });
-
     }
 
     /**
@@ -27,7 +26,7 @@ class SetUserAgentNullable extends Migration
     public function down(): void
     {
         Schema::table('request_logs', static function (Blueprint $table) {
-			$table->string('user_agent')->nullable(false)->change();
+            $table->string('user_agent')->nullable(false)->change();
         });
     }
 }
