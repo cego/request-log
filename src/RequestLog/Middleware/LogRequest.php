@@ -3,7 +3,6 @@
 namespace Cego\RequestLog\Middleware;
 
 use Closure;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Cego\RequestLog\Models\RequestLog;
 use Illuminate\Support\Facades\Config;
@@ -67,7 +66,7 @@ class LogRequest
 
         RequestLog::create([
             'client_ip'          => $request->ip(),
-            'user_agent'         => $request->userAgent() ?? '',
+            'user_agent'         => $request->userAgent(),
             'method'             => $request->method(),
             'status'             => $response->status(),
             'url'                => $request->url(),
