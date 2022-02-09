@@ -67,7 +67,7 @@ class LogRequest
 
         RequestLog::create([
             'client_ip'          => $request->ip(),
-            'user_agent'         => $request->userAgent(),
+            'user_agent'         => $request->userAgent() ?? '',
             'method'             => $request->method(),
             'status'             => $response->status(),
             'url'                => $request->url(),
