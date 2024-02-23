@@ -14,8 +14,7 @@
     "require": {
         "php": "^8.2",
         "ext-json": "*",
-        "ext-mbstring": "*",
-        "ext-elastic_apm": "*",
+        "ext-mbstring": "*",        
         "nesbot/carbon": "^2.17",
         "illuminate/http": "^10.0",
         "illuminate/support": "^10.0",
