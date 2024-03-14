@@ -21,7 +21,7 @@
         "cego/elastic-apm-wrapper": "^1.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.0",
+        "orchestra/testbench": "^9.0",
         "doctrine/dbal": "^3.3",
         "cego/php-cs-fixer": "^1.0"
     },
