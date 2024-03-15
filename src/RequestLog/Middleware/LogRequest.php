@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Cego\RequestLog\Data\RequestLog;
 use Illuminate\Support\Facades\Route;
-use Cego\ElasticApmWrapper\ApmWrapper;
 use Illuminate\Support\Facades\Config;
 use Cego\RequestLog\Utilities\SecurityUtility;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,9 +50,7 @@ class LogRequest
      */
     public function terminate(Request $request, Response $response): void
     {
-        ApmWrapper::captureCurrentSpan('RequestLogMiddleware::terminate', 'app', function () use ($request, $response) {
-            $this->logRequest($request, $response);
-        });
+        $this->logRequest($request, $response);
     }
 
     /**

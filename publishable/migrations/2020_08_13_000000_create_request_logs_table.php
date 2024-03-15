@@ -28,7 +28,7 @@ class CreateRequestLogsTable extends Migration
             $table->mediumText('response_headers');
             $table->mediumText('response_body');
             $table->mediumText('response_exception');
-            $table->unsignedDecimal('execution_time', 20, 10);
+            $table->decimal('execution_time', 20, 10)->unsigned();
             $table->timestamps();
         });
     }
