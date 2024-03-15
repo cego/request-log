@@ -37,16 +37,16 @@ class RequestLog
                     'body'         => [
                         'content' => $this->requestBody
                     ],
-                    'cookies' => $this->requestCookies,
-                    'headers' => $this->requestHeaders,
+                    'cookies.raw' => json_encode($this->requestCookies, JSON_PRETTY_PRINT),
+                    'headers.raw' => json_encode($this->requestHeaders, JSON_PRETTY_PRINT),
                     'method'  => $this->method
                 ],
                 'response' => [
                     'body' => [
                         'content' => $this->responseBody
                     ],
-                    'cookies'     => $this->responseCookies,
-                    'headers'     => $this->responseHeaders,
+                    'cookies.raw'     => json_encode($this->responseCookies, JSON_PRETTY_PRINT),
+                    'headers.raw'     => json_encode($this->responseHeaders, JSON_PRETTY_PRINT),
                     'status_code' => $this->status
                 ]
             ],
