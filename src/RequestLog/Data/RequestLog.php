@@ -10,6 +10,7 @@ class RequestLog
     public function __construct(
         public readonly string $method,
         public readonly string $url,
+        public readonly ?string $routeUri,
         public readonly string $root,
         public readonly string $path,
         public readonly string $queryString,
@@ -48,7 +49,8 @@ class RequestLog
                     'cookies'     => $this->responseCookies,
                     'headers'     => $this->responseHeaders,
                     'status_code' => $this->status
-                ]
+                ],
+                'route' => $this->routeUri
             ],
             'event' => [
                 'duration' => $this->executionTimeNs // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
