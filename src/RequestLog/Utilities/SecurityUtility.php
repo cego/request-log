@@ -141,7 +141,7 @@ class SecurityUtility
                 'path'     => $cookie->getPath(),
                 'secure'   => $cookie->isSecure(),
                 'httpOnly' => $cookie->isHttpOnly(),
-                'sameSite' => $cookie->getSameSite()
+                'sameSite' => $cookie->getSameSite(),
             ];
         }
 

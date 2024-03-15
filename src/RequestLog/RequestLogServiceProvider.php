@@ -22,9 +22,9 @@ class RequestLogServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      *
-     * @return void
-     *
      * @throws BindingResolutionException
+     *
+     * @return void
      */
     public function boot(): void
     {

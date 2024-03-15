@@ -8,21 +8,21 @@ use Psr\Log\LoggerInterface;
 class RequestLog
 {
     public function __construct(
-        public readonly string $method,
-        public readonly string $url,
+        public readonly string  $method,
+        public readonly string  $url,
         public readonly ?string $routeUri,
-        public readonly string $root,
-        public readonly string $path,
-        public readonly string $queryString,
-        public readonly array  $requestHeaders,
-        public readonly array  $requestCookies,
-        public readonly string $requestBody,
-        public readonly int    $status,
-        public readonly array  $responseHeaders,
-        public readonly array  $responseCookies,
-        public readonly string $responseBody,
-        public ?Throwable      $responseException,
-        public int             $executionTimeNs,
+        public readonly string  $root,
+        public readonly string  $path,
+        public readonly string  $queryString,
+        public readonly array   $requestHeaders,
+        public readonly array   $requestCookies,
+        public readonly string  $requestBody,
+        public readonly int     $status,
+        public readonly array   $responseHeaders,
+        public readonly array   $responseCookies,
+        public readonly string  $responseBody,
+        public ?Throwable       $responseException,
+        public int              $executionTimeNs,
     ) {
     }
 
@@ -36,28 +36,28 @@ class RequestLog
                     'path'         => $this->path,
                     'query_string' => $this->queryString,
                     'body'         => [
-                        'content' => $this->requestBody
+                        'content' => $this->requestBody,
                     ],
                     'cookies.raw' => json_encode($this->requestCookies, JSON_PRETTY_PRINT),
                     'headers.raw' => json_encode($this->requestHeaders, JSON_PRETTY_PRINT),
-                    'method'  => $this->method
+                    'method'      => $this->method,
                 ],
                 'response' => [
                     'body' => [
-                        'content' => $this->responseBody
+                        'content' => $this->responseBody,
                     ],
-                    'cookies.raw'     => json_encode($this->responseCookies, JSON_PRETTY_PRINT),
-                    'headers.raw'     => json_encode($this->responseHeaders, JSON_PRETTY_PRINT),
-                    'status_code' => $this->status
+                    'cookies.raw' => json_encode($this->responseCookies, JSON_PRETTY_PRINT),
+                    'headers.raw' => json_encode($this->responseHeaders, JSON_PRETTY_PRINT),
+                    'status_code' => $this->status,
                 ],
-                'route' => $this->routeUri
+                'route' => $this->routeUri,
             ],
             'event' => [
-                'duration' => $this->executionTimeNs // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
+                'duration' => $this->executionTimeNs, // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
             ],
             'log' => [
-                'type' => 'request-logs'
-            ]
+                'type' => 'request-logs',
+            ],
         ];
 
         if($this->responseException !== null) {
@@ -74,7 +74,7 @@ class RequestLog
         }
 
         $logger->debug(
-            sprintf("Timing for %s", $this->url),
+            sprintf('Timing for %s', $this->url),
             $context
         );
     }
