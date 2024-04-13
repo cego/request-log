@@ -26,12 +26,16 @@ class RequestLog
     ) {
     }
 
-    public static function associativeArrayToMultiline($arr): string
+    public static function associativeArrayToMultiline(?array $arr): string
     {
-        $res = "";
+        $res = '';
+
+        if ( ! is_array($arr)) {
+            return $res;
+        }
 
         foreach ($arr as $name => $value) {
-            $res .= $name . "=" . $value . "\n";
+            $res .= $name . '=' . $value . PHP_EOL;
         }
 
         return $res;
@@ -47,27 +51,27 @@ class RequestLog
                     'path'         => $this->path,
                     'query_string' => $this->queryString,
                     'body'         => [
-                        'content' => $this->requestBody
+                        'content' => $this->requestBody,
                     ],
                     'cookies.raw' => RequestLog::associativeArrayToMultiline($this->requestCookies),
                     'headers.raw' => RequestLog::associativeArrayToMultiline($this->requestHeaders),
-                    'method'      => $this->method
+                    'method'      => $this->method,
                 ],
                 'response' => [
                     'body' => [
-                        'content' => $this->responseBody
+                        'content' => $this->responseBody,
                     ],
                     'cookies.raw' => RequestLog::associativeArrayToMultiline($this->responseCookies),
                     'headers.raw' => RequestLog::associativeArrayToMultiline($this->responseHeaders),
-                    'status_code' => $this->status
-                ]
+                    'status_code' => $this->status,
+                ],
             ],
             'event' => [
-                'duration' => $this->executionTimeNs // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
+                'duration' => $this->executionTimeNs, // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
             ],
             'log' => [
-                'type' => 'request-logs'
-            ]
+                'type' => 'request-logs',
+            ],
         ];
 
         if($this->responseException !== null) {

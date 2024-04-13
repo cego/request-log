@@ -129,7 +129,7 @@ class LogRequest
             ))->log(Log::getLogger());
 
         } catch (Throwable $throwable) {
-            Log::error($throwable);
+            Log::error($throwable->getTraceAsString());
         }
     }
 }
