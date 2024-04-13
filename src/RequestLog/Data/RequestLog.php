@@ -26,6 +26,30 @@ class RequestLog
     ) {
     }
 
+    /**
+     * @param array<string,array<string>|string>|null $arr
+     *
+     * @return string
+     */
+    public static function associativeArrayToMultiline(?array $arr): string
+    {
+        $res = '';
+
+        if ( ! is_array($arr)) {
+            return $res;
+        }
+
+        foreach ($arr as $name => $value) {
+            if (is_array($value)) {
+                $res .= $name . '=' . implode(',', $value) . PHP_EOL;
+            } else {
+                $res .= $name . '=' . $value . PHP_EOL;
+            }
+        }
+
+        return $res;
+    }
+
     public function log(LoggerInterface $logger)
     {
         $context = [
@@ -38,16 +62,16 @@ class RequestLog
                     'body'         => [
                         'content' => $this->requestBody,
                     ],
-                    'cookies.raw' => json_encode($this->requestCookies, JSON_PRETTY_PRINT),
-                    'headers.raw' => json_encode($this->requestHeaders, JSON_PRETTY_PRINT),
+                    'cookies.raw' => RequestLog::associativeArrayToMultiline($this->requestCookies),
+                    'headers.raw' => RequestLog::associativeArrayToMultiline($this->requestHeaders),
                     'method'      => $this->method,
                 ],
                 'response' => [
                     'body' => [
                         'content' => $this->responseBody,
                     ],
-                    'cookies.raw' => json_encode($this->responseCookies, JSON_PRETTY_PRINT),
-                    'headers.raw' => json_encode($this->responseHeaders, JSON_PRETTY_PRINT),
+                    'cookies.raw' => RequestLog::associativeArrayToMultiline($this->responseCookies),
+                    'headers.raw' => RequestLog::associativeArrayToMultiline($this->responseHeaders),
                     'status_code' => $this->status,
                 ],
                 'route' => $this->routeUri,
