@@ -26,6 +26,11 @@ class RequestLog
     ) {
     }
 
+    /**
+     * @param array<string,array<string>|string>|null $arr
+     *
+     * @return string
+     */
     public static function associativeArrayToMultiline(?array $arr): string
     {
         $res = '';
