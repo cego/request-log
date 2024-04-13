@@ -81,6 +81,7 @@ class RequestLog
             'log' => [
                 'type' => 'request-logs',
             ],
+            'route' => $this->routeUri,
         ];
 
         if($this->responseException !== null) {
