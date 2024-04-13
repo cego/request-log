@@ -35,7 +35,11 @@ class RequestLog
         }
 
         foreach ($arr as $name => $value) {
-            $res .= $name . '=' . $value . PHP_EOL;
+            if (is_array($value)) {
+                $res .= $name . '=' . implode(',', $value) . PHP_EOL;
+            } else {
+                $res .= $name . '=' . $value . PHP_EOL;
+            }
         }
 
         return $res;
