@@ -74,6 +74,7 @@ class RequestLog
                     'headers.raw' => RequestLog::associativeArrayToMultiline($this->responseHeaders),
                     'status_code' => $this->status,
                 ],
+                'route' => $this->routeUri,
             ],
             'event' => [
                 'duration' => $this->executionTimeNs, // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
@@ -81,7 +82,6 @@ class RequestLog
             'log' => [
                 'type' => 'request-logs',
             ],
-            'route' => $this->routeUri,
         ];
 
         if($this->responseException !== null) {
