@@ -26,6 +26,17 @@ class RequestLog
     ) {
     }
 
+    public static function associativeArrayToMultiline($arr): string
+    {
+        $res = "";
+
+        foreach ($arr as $name => $value) {
+            $res .= $name . "=" . $value . "\n";
+        }
+
+        return $res;
+    }
+
     public function log(LoggerInterface $logger)
     {
         $context = [
@@ -36,28 +47,27 @@ class RequestLog
                     'path'         => $this->path,
                     'query_string' => $this->queryString,
                     'body'         => [
-                        'content' => $this->requestBody,
+                        'content' => $this->requestBody
                     ],
-                    'cookies.raw' => json_encode($this->requestCookies, JSON_PRETTY_PRINT),
-                    'headers.raw' => json_encode($this->requestHeaders, JSON_PRETTY_PRINT),
-                    'method'      => $this->method,
+                    'cookies.raw' => RequestLog::associativeArrayToMultiline($this->requestCookies),
+                    'headers.raw' => RequestLog::associativeArrayToMultiline($this->requestHeaders),
+                    'method'      => $this->method
                 ],
                 'response' => [
                     'body' => [
-                        'content' => $this->responseBody,
+                        'content' => $this->responseBody
                     ],
-                    'cookies.raw' => json_encode($this->responseCookies, JSON_PRETTY_PRINT),
-                    'headers.raw' => json_encode($this->responseHeaders, JSON_PRETTY_PRINT),
-                    'status_code' => $this->status,
-                ],
-                'route' => $this->routeUri,
+                    'cookies.raw' => RequestLog::associativeArrayToMultiline($this->responseCookies),
+                    'headers.raw' => RequestLog::associativeArrayToMultiline($this->responseHeaders),
+                    'status_code' => $this->status
+                ]
             ],
             'event' => [
-                'duration' => $this->executionTimeNs, // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
+                'duration' => $this->executionTimeNs // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
             ],
             'log' => [
-                'type' => 'request-logs',
-            ],
+                'type' => 'request-logs'
+            ]
         ];
 
         if($this->responseException !== null) {
