@@ -126,7 +126,7 @@ class LogRequest
                 responseBody: $this->truncate($response->getContent() ?: '{}', $truncateBodyLength),
                 responseException: $response->exception ?? null,
                 executionTimeNs: $executionTimeNs
-            ))->log(Log::getLogger());
+            ))->log();
 
         } catch (Throwable $throwable) {
             Log::error($throwable);

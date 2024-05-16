@@ -3,7 +3,7 @@
 namespace Cego\RequestLog\Data;
 
 use Throwable;
-use Psr\Log\LoggerInterface;
+use Illuminate\Support\Facades\Log;
 
 class RequestLog
 {
@@ -26,7 +26,7 @@ class RequestLog
     ) {
     }
 
-    public function log(LoggerInterface $logger)
+    public function log()
     {
         $context = [
             'http' => [
@@ -73,7 +73,7 @@ class RequestLog
             ];
         }
 
-        $logger->debug(
+        Log::debug(
             sprintf('Timing for %s', $this->url),
             $context
         );
