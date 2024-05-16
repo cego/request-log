@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use Monolog\Logger;
 use Tests\TestCase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -35,12 +34,11 @@ class LogRequestTest extends TestCase
         $methods = ['get', 'post', 'put', 'patch', 'delete'];
 
         foreach ($methods as $method) {
-            $loggerMock = $this->createMock(Logger::class);
-
-            Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+            $loggerMock = Log::partialMock();
+            Log::setApplication($this->app);
 
             // Assert debug was called on loggerMock once with {} request body
-            $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+            $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
                 $this->assertEquals('{}', $context['http']['request']['body']['content']);
             });
 
@@ -51,11 +49,11 @@ class LogRequestTest extends TestCase
     public function test_it_masks_request_headers()
     {
         // Arrange
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
         // Assert debug was called on loggerMock once with {} request body
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $loggedHeaders = $context['http']['request']['headers.raw'];
             $loggedHeaders = json_decode($loggedHeaders, true);
 
@@ -76,11 +74,11 @@ class LogRequestTest extends TestCase
     public function test_it_masks_duplicate_request_headers()
     {
         // Arrange
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
         // Assert debug was called on loggerMock once with {} request body
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $loggedHeaders = $context['http']['request']['headers.raw'];
             $loggedHeaders = json_decode($loggedHeaders, true);
             $this->assertEquals('[ MASKED ]', $loggedHeaders['x-encrypt-this-header'][0]);
@@ -101,11 +99,11 @@ class LogRequestTest extends TestCase
     public function test_it_masks_request_body()
     {
         // Arrange
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
         // Assert debug was called on loggerMock once with {} request body
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $loggedBody = json_decode($context['http']['request']['body']['content'], true);
             $this->assertEquals([
                 'password'  => '[ MASKED ]',
@@ -155,11 +153,11 @@ class LogRequestTest extends TestCase
     public function test_it_tests()
     {
         // Arrange
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
         // Assert debug was called on loggerMock once with {} request body
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $loggedHeaders = $context['http']['request']['headers.raw'];
             $loggedHeaders = json_decode($loggedHeaders, true);
             $this->assertEquals('{"token":"[ MASKED ]","cake":"not-secret"}', $context['http']['request']['query_string']);
@@ -174,11 +172,10 @@ class LogRequestTest extends TestCase
     public function test_it_masks_request_cookies()
     {
         // Arrange
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
-        // Assert debug was called on loggerMock once with {} request body
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $loggedCookies = $context['http']['request']['cookies.raw'];
             $loggedCookies = json_decode($loggedCookies, true);
             $this->assertEquals('[ MASKED ]', $loggedCookies['SECRET_COOKIE']);
@@ -196,11 +193,11 @@ class LogRequestTest extends TestCase
     public function test_it_masks_response_cookies(): void
     {
         // Arrange
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
         // Assert debug was called on loggerMock once with {} request body
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $loggedCookies = $context['http']['response']['cookies.raw'];
             $loggedCookies = json_decode($loggedCookies, true);
             $this->assertEquals('[ MASKED ]', $loggedCookies['SECRET_COOKIE']['value']);
@@ -220,9 +217,11 @@ class LogRequestTest extends TestCase
 
     public function test_it_doesnt_crash_if_exception_on_response_doesnt_exist(): void
     {
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
-        Log::partialMock()->shouldNotReceive('error');
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
+
+        // Assert debug was called on loggerMock once with {} request body
+        $loggerMock->shouldNotReceive('error');
 
         $middleware = new LogRequest();
 
@@ -238,10 +237,10 @@ class LogRequestTest extends TestCase
         // Set config request-log.truncateBodyLength to 100
         Config::set('request-log.truncateBodyLength', 100);
 
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $this->assertEquals(100, strlen($context['http']['request']['body']['content']));
             $this->assertEquals(100, strlen($context['http']['response']['body']['content']));
         });
@@ -264,10 +263,11 @@ class LogRequestTest extends TestCase
         // Set config request-log.truncateBodyLength to 100
         Config::set('request-log.truncateBodyLength', -1);
 
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        // Assert debug was called on loggerMock once with {} request body
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $this->assertEquals(48897, strlen($context['http']['request']['body']['content']));
             $this->assertEquals(48897, strlen($context['http']['response']['body']['content']));
         });
@@ -290,10 +290,10 @@ class LogRequestTest extends TestCase
         // Set config request-log.truncateBodyLength to 100
         Config::set('request-log.truncateBodyLength', 100);
 
-        $loggerMock = $this->createMock(Logger::class);
-        Log::partialMock()->shouldReceive('getLogger')->once()->withAnyArgs()->andReturn($loggerMock);
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
 
-        $loggerMock->expects($this->once())->method('debug')->with($this->stringStartsWith('Timing for'))->willReturnCallback(function ($message, $context) {
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
             $this->assertEquals(3, strlen($context['http']['request']['body']['content']));
             $this->assertEquals(3, strlen($context['http']['response']['body']['content']));
         });
