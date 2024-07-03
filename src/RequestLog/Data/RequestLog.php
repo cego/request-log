@@ -52,13 +52,16 @@ class RequestLog
                 ],
                 'route' => $this->routeUri,
             ],
-            'event' => [
-                'duration' => $this->executionTimeNs, // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
-            ],
             'log' => [
                 'type' => 'request-logs',
             ],
         ];
+
+        if ($this->executionTimeNs !== null) {
+            $context['event'] = [
+                'duration' => $this->executionTimeNs, // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
+            ];
+        }
 
         if($this->responseException !== null) {
             $message = $this->responseException->getMessage();
