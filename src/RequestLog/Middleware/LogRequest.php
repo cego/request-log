@@ -99,13 +99,11 @@ class LogRequest
     private function logRequest(Request $request, Response $response): void
     {
         try {
-            if ( ! config('request-log.enabled') || $this->routeIsBlacklisted($request)) {
+            if (!config('request-log.enabled') || $this->routeIsBlacklisted($request)) {
                 return;
             }
 
-            Log::debug($request);
-
-            $executionTimeNs = null;
+            $executionTimeNs = null
             if (!is_null($this->startTime)) {
                 $executionTimeNs = hrtime(true) - $this->startTime;
             }
