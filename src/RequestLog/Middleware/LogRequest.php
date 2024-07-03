@@ -17,7 +17,7 @@ class LogRequest
     /**
      * Holds the start time of the request
      *
-     * @var int $startTime
+     * @var ?int $startTime
      */
     protected $startTime = null;
 
