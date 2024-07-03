@@ -104,7 +104,8 @@ class LogRequest
             }
 
             $executionTimeNs = null;
-            if (!is_null($this->startTime)) {
+
+            if ( ! is_null($this->startTime)) {
                 $executionTimeNs = hrtime(true) - $this->startTime;
             }
 
