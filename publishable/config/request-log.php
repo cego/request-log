@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'enabled' => env('REQUEST_LOG_ENABLED', false),
+    'enabled' => env('REQUEST_LOG_ENABLED', true),
 
     'truncateBodyLength' => env('REQUEST_LOG_TRUNCATE_BODY_LENGTH', 10000), // Truncate the length of body of request or response to maximum this size. Set to -1 to disable.
 
