@@ -99,7 +99,7 @@ class LogRequest
     private function logRequest(Request $request, Response $response): void
     {
         try {
-            if (!config('request-log.enabled') || $this->routeIsBlacklisted($request)) {
+            if ( ! config('request-log.enabled') || $this->routeIsBlacklisted($request)) {
                 return;
             }
 
