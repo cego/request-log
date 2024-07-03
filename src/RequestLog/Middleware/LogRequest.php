@@ -19,7 +19,7 @@ class LogRequest
      *
      * @var int $startTime
      */
-    protected $startTime;
+    protected $startTime = null;
 
     /** Holds the request cookies. Some middleware will change the cookies, thus we need to save it from handle
      *
@@ -103,7 +103,12 @@ class LogRequest
                 return;
             }
 
-            $executionTimeNs = hrtime(true) - $this->startTime;
+            Log::debug($request);
+
+            $executionTimeNs = null;
+            if (!is_null($this->startTime)) {
+                $executionTimeNs = hrtime(true) - $this->startTime;
+            }
 
             $responseHeaders = $response->headers->all();
             unset($responseHeaders['set-cookie']);
@@ -126,7 +131,7 @@ class LogRequest
                 responseBody: $this->truncate($response->getContent() ?: '{}', $truncateBodyLength),
                 responseException: $response->exception ?? null,
                 executionTimeNs: $executionTimeNs
-            ))->log();
+            ))->log(Log::getLogger());
 
         } catch (Throwable $throwable) {
             Log::error($throwable);
