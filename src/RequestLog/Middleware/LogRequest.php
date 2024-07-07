@@ -105,9 +105,7 @@ class LogRequest
 
             $executionTimeNs = null;
 
-            if (is_null($this->startTime) && defined('LARAVEL_START')) {
-                $executionTimeNs = (microtime(true) - constant('LARAVEL_START') * 1E9);
-            } elseif ( ! is_null($this->startTime)) {
+            if ( ! is_null($this->startTime)) {
                 $executionTimeNs = hrtime(true) - $this->startTime;
             }
 
