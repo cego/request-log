@@ -17,9 +17,9 @@ class LogRequest
     /**
      * Holds the start time of the request
      *
-     * @var int $startTime
+     * @var ?int $startTime
      */
-    protected $startTime;
+    protected $startTime = null;
 
     /** Holds the request cookies. Some middleware will change the cookies, thus we need to save it from handle
      *
@@ -103,7 +103,11 @@ class LogRequest
                 return;
             }
 
-            $executionTimeNs = hrtime(true) - $this->startTime;
+            $executionTimeNs = null;
+
+            if ( ! is_null($this->startTime)) {
+                $executionTimeNs = hrtime(true) - $this->startTime;
+            }
 
             $responseHeaders = $response->headers->all();
             unset($responseHeaders['set-cookie']);
