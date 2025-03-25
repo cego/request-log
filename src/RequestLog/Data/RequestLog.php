@@ -33,7 +33,7 @@ class RequestLog
                 'request' => [
                     'url'          => $this->url,
                     'root'         => $this->root,
-                    'path'         => $this->path,
+                    'path'         => $this->ensureLeadingSlash($this->path),
                     'query_string' => $this->queryString,
                     'body'         => [
                         'content' => $this->requestBody,
@@ -81,5 +81,14 @@ class RequestLog
             sprintf('Timing for %s', $this->url),
             $context
         );
+    }
+
+    private function ensureLeadingSlash(string $path): string
+    {
+        if ($path === '') {
+            return '/';
+        }
+
+        return $path[0] === '/' ? $path : '/' . $path;
     }
 }

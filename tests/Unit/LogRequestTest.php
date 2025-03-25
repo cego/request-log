@@ -342,4 +342,94 @@ class LogRequestTest extends TestCase
 
         $log->log();
     }
+
+    public function test_it_prefixes_path_with_slash_if_missing(): void
+    {
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
+
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
+            $this->assertEquals('/hello', $context['http']['request']['path']);
+        });
+
+        $log = new RequestLog(
+            method: 'GET',
+            url: 'http://localhost',
+            routeUri: '/test',
+            root: '/',
+            path: 'hello',
+            queryString: '',
+            requestHeaders: [],
+            requestCookies: [],
+            responseHeaders: [],
+            responseCookies: [],
+            requestBody: '',
+            responseBody: '',
+            status: 200,
+            responseException: null,
+            executionTimeNs: 1000000
+        );
+
+        $log->log();
+    }
+
+    public function test_it_prefixes_path_with_slash_if_empty(): void
+    {
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
+
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
+            $this->assertEquals('/', $context['http']['request']['path']);
+        });
+
+        $log = new RequestLog(
+            method: 'GET',
+            url: 'http://localhost',
+            routeUri: '/test',
+            root: '/',
+            path: '',
+            queryString: '',
+            requestHeaders: [],
+            requestCookies: [],
+            responseHeaders: [],
+            responseCookies: [],
+            requestBody: '',
+            responseBody: '',
+            status: 200,
+            responseException: null,
+            executionTimeNs: 1000000
+        );
+
+        $log->log();
+    }
+
+    public function test_it_does_not_add_extra_path_prefix_slash()
+    {
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
+
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
+            $this->assertEquals('/hello', $context['http']['request']['path']);
+        });
+
+        $log = new RequestLog(
+            method: 'GET',
+            url: 'http://localhost',
+            routeUri: '/test',
+            root: '/',
+            path: '/hello',
+            queryString: '',
+            requestHeaders: [],
+            requestCookies: [],
+            responseHeaders: [],
+            responseCookies: [],
+            requestBody: '',
+            responseBody: '',
+            status: 200,
+            responseException: null,
+            executionTimeNs: 1000000
+        );
+
+        $log->log();
+    }
 }
