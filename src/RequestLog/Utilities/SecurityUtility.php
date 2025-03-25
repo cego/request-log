@@ -132,7 +132,7 @@ class SecurityUtility
 
         $cookieResult = [];
 
-        foreach($cookies as $cookie) {
+        foreach ($cookies as $cookie) {
             $cookieName = $cookie->getName();
             $cookieResult[$cookieName] = [
                 'value'    => $cookiesToMask->contains($cookieName) ? '[ MASKED ]' : $cookie->getValue(),
