@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Cego\RequestLog\Data\RequestLog;
 use Illuminate\Support\Facades\Config;
 use Tests\Utility\SetCookieMiddleware;
 use Cego\RequestLog\Middleware\LogRequest;
@@ -309,5 +310,36 @@ class LogRequestTest extends TestCase
         $response->setContent('hej');
 
         $middleware->terminate($request, $response);
+    }
+
+    public function test_it_logs_duration_human_in_ms(): void
+    {
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
+
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
+            $this->assertEquals(1000000, $context['event']['duration']);
+            $this->assertEquals('1.00ms', $context['event']['duration_human']);
+        });
+
+        $log = new RequestLog(
+            method: 'GET',
+            url: 'http://localhost',
+            routeUri: '/test',
+            root: '/',
+            path: '',
+            queryString: '',
+            requestHeaders: [],
+            requestCookies:  [],
+            responseHeaders: [],
+            responseCookies: [],
+            requestBody: '',
+            responseBody: '',
+            status: 200,
+            responseException: null,
+            executionTimeNs: 1000000
+        );
+
+        $log->log();
     }
 }

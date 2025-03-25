@@ -41,6 +41,7 @@ class RequestLog
                     'cookies.raw' => json_encode($this->requestCookies, JSON_PRETTY_PRINT),
                     'headers.raw' => json_encode($this->requestHeaders, JSON_PRETTY_PRINT),
                     'method'      => $this->method,
+                    'route'       => $this->routeUri,
                 ],
                 'response' => [
                     'body' => [
@@ -50,7 +51,6 @@ class RequestLog
                     'headers.raw' => json_encode($this->responseHeaders, JSON_PRETTY_PRINT),
                     'status_code' => $this->status,
                 ],
-                'route' => $this->routeUri,
             ],
             'log' => [
                 'type' => 'request-logs',
@@ -59,11 +59,12 @@ class RequestLog
 
         if ($this->executionTimeNs !== null) {
             $context['event'] = [
-                'duration' => $this->executionTimeNs, // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
+                'duration'       => $this->executionTimeNs, // In nanoseconds, see https://www.elastic.co/guide/en/ecs/current/ecs-event.html
+                'duration_human' => number_format($this->executionTimeNs / 1_000_000.0, 2) . 'ms',
             ];
         }
 
-        if($this->responseException !== null) {
+        if ($this->responseException !== null) {
             $message = $this->responseException->getMessage();
             $message = empty($message) ? get_class($this->responseException) . ' thrown with empty message' : $message;
 

@@ -83,7 +83,7 @@ class LogRequest
      */
     protected function truncate(string $string, int $length): string
     {
-        if($length <= 0) {
+        if ($length <= 0) {
             return $string;
         }
 
