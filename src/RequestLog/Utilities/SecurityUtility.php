@@ -75,16 +75,38 @@ class SecurityUtility
      */
     public static function getBodyWithMaskingApplied(Request $request): ?string
     {
-        if ( ! $request->hasHeader('X-SENSITIVE-REQUEST-BODY-JSON') || ! $request->isJson()) {
-            // If the request is not JSON, getContent(), which is what we log as request body, is always empty
+        $sensitiveBodyHeaderIn = $request->header('X-SENSITIVE-REQUEST-BODY-JSON');
+        $sensitiveBodyFields = $sensitiveBodyHeaderIn ? json_decode($sensitiveBodyHeaderIn) : [];
+        $redactedBodyFields = Config::get('request-log.redact.request_body', []);
+
+        $fieldsToMask = collect($sensitiveBodyFields)->concat($redactedBodyFields);
+
+        if ($fieldsToMask->isEmpty() || ! $request->isJson()) {
             return $request->getContent();
         }
 
-        $sensitiveBodyFields = json_decode($request->header('X-SENSITIVE-REQUEST-BODY-JSON'));
-
         $data = json_decode($request->getContent(), true);
 
-        foreach ($sensitiveBodyFields as $field) {
+        foreach ($fieldsToMask as $field) {
+            if (Arr::has($data, $field)) {
+                Arr::set($data, $field, '[ MASKED ]');
+            }
+        }
+
+        return json_encode($data);
+    }
+
+    public static function getResponseBodyWithMaskingApplied(string $responseContent, bool $isJson): string
+    {
+        $redactedBodyFields = collect(Config::get('request-log.redact.response_body', []));
+
+        if ($redactedBodyFields->isEmpty() || ! $isJson) {
+            return $responseContent;
+        }
+
+        $data = json_decode($responseContent, true);
+
+        foreach ($redactedBodyFields as $field) {
             if (Arr::has($data, $field)) {
                 Arr::set($data, $field, '[ MASKED ]');
             }

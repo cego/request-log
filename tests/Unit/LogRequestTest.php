@@ -151,6 +151,95 @@ class LogRequestTest extends TestCase
         $this->postJson('/test', $data, $headers);
     }
 
+    public function test_it_masks_request_body_from_config()
+    {
+        // Arrange
+        Config::set('request-log.redact.request_body', ['password', 'person.sensitive_data']);
+
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
+
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
+            $loggedBody = json_decode($context['http']['request']['body']['content'], true);
+            $this->assertEquals('[ MASKED ]', $loggedBody['password']);
+            $this->assertEquals('[ MASKED ]', $loggedBody['person']['sensitive_data']);
+            $this->assertEquals('not secret', $loggedBody['person']['insensitive_data']);
+        });
+
+        $data = [
+            'password' => '12345678',
+            'person'   => [
+                'sensitive_data'   => 'secret',
+                'insensitive_data' => 'not secret',
+            ],
+        ];
+
+        // Act
+        $this->postJson('/test', $data);
+    }
+
+    public function test_it_merges_config_and_header_body_masking()
+    {
+        // Arrange
+        Config::set('request-log.redact.request_body', ['password']);
+
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
+
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
+            $loggedBody = json_decode($context['http']['request']['body']['content'], true);
+            $this->assertEquals('[ MASKED ]', $loggedBody['password']);
+            $this->assertEquals('[ MASKED ]', $loggedBody['person']['sensitive_data']);
+            $this->assertEquals('not secret', $loggedBody['person']['insensitive_data']);
+        });
+
+        $data = [
+            'password' => '12345678',
+            'person'   => [
+                'sensitive_data'   => 'secret',
+                'insensitive_data' => 'not secret',
+            ],
+        ];
+
+        $headers = [
+            'X-SENSITIVE-REQUEST-BODY-JSON' => json_encode(['person.sensitive_data']),
+        ];
+
+        // Act
+        $this->postJson('/test', $data, $headers);
+    }
+
+    public function test_it_masks_response_body_from_config()
+    {
+        // Arrange
+        Config::set('request-log.redact.response_body', ['token', 'user.ssn']);
+
+        $loggerMock = Log::partialMock();
+        Log::setApplication($this->app);
+
+        $loggerMock->shouldReceive('debug')->once()->andReturnUsing(function ($message, $context) {
+            $loggedBody = json_decode($context['http']['response']['body']['content'], true);
+            $this->assertEquals('[ MASKED ]', $loggedBody['token']);
+            $this->assertEquals('[ MASKED ]', $loggedBody['user']['ssn']);
+            $this->assertEquals('John', $loggedBody['user']['name']);
+        });
+
+        $middleware = new LogRequest();
+
+        $request = new Request(server: ['HTTP_CONTENT_TYPE' => 'application/json']);
+
+        $response = new Response();
+        $response->setContent(json_encode([
+            'token' => 'secret-token',
+            'user'  => [
+                'name' => 'John',
+                'ssn'  => '123-45-6789',
+            ],
+        ]));
+
+        $middleware->terminate($request, $response);
+    }
+
     public function test_it_tests()
     {
         // Arrange

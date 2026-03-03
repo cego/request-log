@@ -38,7 +38,9 @@ return [
             'cegosso',
             'refresh_token',
             'access_token',
-        ]
+        ],
+        'request_body' => array_filter(explode(',', env('REQUEST_LOG_REDACT_REQUEST_BODY', ''))),
+        'response_body' => array_filter(explode(',', env('REQUEST_LOG_REDACT_RESPONSE_BODY', ''))),
     ],
 
     /*

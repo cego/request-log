@@ -127,7 +127,7 @@ class LogRequest
                 status: $response->getStatusCode(),
                 responseHeaders: $responseHeaders,
                 responseCookies: SecurityUtility::getResponseCookiesWithMaskingApplied($response->headers->getCookies(), $request),
-                responseBody: $this->truncate($response->getContent() ?: '{}', $truncateBodyLength),
+                responseBody: $this->truncate(SecurityUtility::getResponseBodyWithMaskingApplied($response->getContent() ?: '{}', $request->isJson()), $truncateBodyLength),
                 responseException: $response->exception ?? null,
                 executionTimeNs: $executionTimeNs
             ))->log();
